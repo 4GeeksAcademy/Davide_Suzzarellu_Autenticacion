@@ -25,8 +25,8 @@ export const LoginModal = ({ show, onHide }) => {
     const handleChange = (e) => {
         e.persist();
         setInputs((prevState) => ({ ...prevState, [e.target.name]: e.target.value }));
-    };    
-    
+    };
+
     const logUser = async () => {
         const options = {
             method: 'POST',
@@ -48,10 +48,10 @@ export const LoginModal = ({ show, onHide }) => {
 
     const handleSubmit = async (event) => {
         const form = event.currentTarget;
-        event.preventDefault();
         if (form.checkValidity() === false) {
             setValidated(false);
             setLogged(false)
+            event.preventDefault();
             event.stopPropagation();
         } else {
             const validateLog = await logUser();

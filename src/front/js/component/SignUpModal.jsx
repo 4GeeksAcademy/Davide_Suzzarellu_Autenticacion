@@ -8,8 +8,9 @@ import Row from 'react-bootstrap/Row';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import CloseButton from 'react-bootstrap/CloseButton';
 
+
 export const SignUpModal = ({ show, onHide }) => {
-    const [validated, setValidated] = useState(false);
+    const [validated, setValidated] = useState();
     const [inputs, setInputs] = useState({
         first_name: "",
         last_name: "",
@@ -40,39 +41,34 @@ export const SignUpModal = ({ show, onHide }) => {
         };
         const response = await fetch("https://studious-space-zebra-wr76g657jj4rf5xp9-3001.app.github.dev/api/signup", options);
         if (!response.ok) {
-            console.error(`Error: ${response.status}`);
-            return false;
+            return response.status, 400
         }
         const data = await response.json();
-        return true;
+        return data;
     };
+
 
     const handleSubmit = async (event) => {
         const form = event.currentTarget;
         if (form.checkValidity() == false) {
-            event.stopPropagation()
-            setValidated(false);
-        } else {
             event.preventDefault();
+            event.stopPropagation();
+        } else {
             setValidated(true);
-
-            const postSuccess = await postUser();
-
-            if (postSuccess) {
-                setInputs({
-                    first_name: "",
-                    last_name: "",
-                    username: "",
-                    email: "",
-                    password: "",
-                });
-                onHide();
-            } else {
-                setValidated(false)
-                alert("Error posting user");
-            }
+        }
+        if (validated == true) {
+            await postUser()
+            setInputs({
+                first_name: "",
+                last_name: "",
+                username: "",
+                email: "",
+                password: ""
+            })
+            onHide()
         }
     };
+
 
 
     return (
@@ -118,7 +114,7 @@ export const SignUpModal = ({ show, onHide }) => {
                             </FloatingLabel>
                         </Form.Group>
                         <Form.Group as={Col} md="12" controlId="validationEmail">
-                            <FloatingLabel type="email" controlId="validationEmail" label="Email address">
+                            <FloatingLabel controlId="validationEmail" label="Email address">
                                 <Form.Control
                                     required
                                     type="email"
@@ -127,7 +123,7 @@ export const SignUpModal = ({ show, onHide }) => {
                                     onChange={handleChange}
                                     name="email"
                                 />
-                                <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                                <Form.Control.Feedback type="valid">Looks good!</Form.Control.Feedback>
                                 <Form.Control.Feedback type="invalid">
                                     Please enter a email.
                                 </Form.Control.Feedback>
@@ -177,7 +173,7 @@ export const SignUpModal = ({ show, onHide }) => {
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <Button onClick={handleSubmit} variant="success">Sign In</Button>
+                <Button type="submit" onClick={handleSubmit} variant="success">Sign In</Button>
                 <Button variant="danger" onClick={onHide}>Close</Button>
             </Modal.Footer>
         </Modal>
